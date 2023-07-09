@@ -1,0 +1,20 @@
+{
+  "name": "bot-whatsapp-pedidosonline",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/franciley45/Bot-WhatsApp-PedidosOnline.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/franciley45/Bot-WhatsApp-PedidosOnline/issues"
+  },
+  "homepage": "https://github.com/franciley45/Bot-WhatsApp-PedidosOnline#readme"
+}
