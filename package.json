@@ -16,5 +16,12 @@
   "bugs": {
     "url": "https://github.com/franciley45/Bot-WhatsApp-PedidosOnline/issues"
   },
-  "homepage": "https://github.com/franciley45/Bot-WhatsApp-PedidosOnline#readme"
+  "homepage": "https://github.com/franciley45/Bot-WhatsApp-PedidosOnline#readme",
+  "devDependencies": {
+    "@types/node": "^20.4.1",
+    "nodemon": "^3.0.1",
+    "rimraf": "^5.0.1",
+    "ts-node": "^10.9.1",
+    "typecript": "^0.0.1-security"
+  }
 }
