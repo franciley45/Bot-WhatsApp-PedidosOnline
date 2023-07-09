@@ -27,6 +27,5 @@
     "typecript": "^0.0.1-security"
   },
   "dependencies": {
-    "venom-bot": "^5.0.11"
   }
 }
