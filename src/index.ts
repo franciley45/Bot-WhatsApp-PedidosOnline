@@ -1,6 +1,17 @@
 import { Message, Whatsapp, create } from "venom-bot"
 import { openai } from "./lib/openai"
 import { ChatCompletionRequestMessage } from "openai"
+import { initPrompt } from "./utils/initPrompt"
+
+const storeName = "Los Italianos Pizzaria"
+const orderCode = '#sk-123456'
+
+const customerChat: ChatCompletionRequestMessage[] = [
+  {
+    role: "system",
+    content: initPrompt(storeName, orderCode),
+  },
+]
 
 async function completion(
   messages: ChatCompletionRequestMessage[]
@@ -28,9 +39,23 @@ async function start(client: Whatsapp) {
   client.onMessage(async (message: Message) => {
     if (!message.body || message.isGroupMsg) return
 
-    console.log("message:", message.body)
+    customerChat.push({
+      role: "user",
+      content: message.body
+    })
 
-    const response = `Olá!`
+    /* console.log("message:", message.body) */
+    console.log("customerChat:", customerChat[0].content)
+    
+    const response = (await completion([{
+      role: "user",
+      content: message.body
+    }])) || "Não entendi..."
+    
+    customerChat.push({
+      role: "assistant",
+      content: response
+    })
 
     await client.sendText(message.from, response)
   })
