@@ -2,16 +2,19 @@ import { Message, Whatsapp, create } from "venom-bot"
 import { openai } from "./lib/openai"
 import { ChatCompletionRequestMessage } from "openai"
 import { initPrompt } from "./utils/initPrompt"
+import { redis } from "./lib/redis"
 
-const storeName = "Los Italianos Pizzaria"
-const orderCode = '#sk-123456'
-
-const customerChat: ChatCompletionRequestMessage[] = [
-  {
-    role: "system",
-    content: initPrompt(storeName, orderCode),
-  },
-]
+interface CustomerChat {
+  status?: "open" | "closed"
+  orderCode: string
+  chatAt: string
+  customer: {
+    name: string
+    phone: string
+  }
+  messages: ChatCompletionRequestMessage[]
+  orderSummary?: string
+}
 
 async function completion(
   messages: ChatCompletionRequestMessage[]
@@ -39,24 +42,74 @@ async function start(client: Whatsapp) {
   client.onMessage(async (message: Message) => {
     if (!message.body || message.isGroupMsg) return
 
-    customerChat.push({
+    const storeName = "Los Italianos Pizzaria"
+    const customerPhone = `+${message.from.replace("@c.us", "")}`
+    const customerName = message.author
+    const customerKey = `customer:${customerPhone}:chat`
+    const orderCode = `#sk-${("00000" + Math.random()).slice(-5)}`
+
+    const lastChat = JSON.parse((await redis.get(customerKey)) || "{}")
+
+    const customerChat: CustomerChat =
+      lastChat?.status === "open"
+        ? (lastChat as CustomerChat)
+        : {
+            status: "open",
+            orderCode,
+            chatAt: new Date().toISOString(),
+            customer: {
+              name: customerName,
+              phone: customerPhone,
+            },
+            messages: [
+              {
+                role: "system",
+                content: initPrompt(storeName, orderCode),
+              },
+            ],
+            orderSummary: "",
+          }
+
+    console.debug(customerPhone, "👤", message.body)
+
+    customerChat.messages.push({
       role: "user",
-      content: message.body
+      content: message.body,
     })
 
-    /* console.log("message:", message.body) */
-    console.log("customerChat:", customerChat[0].content)
     
-    const response = (await completion([{
-      role: "user",
-      content: message.body
-    }])) || "Não entendi..."
-    
-    customerChat.push({
+    const content =
+      (await completion(customerChat.messages)) || "Não entendi..."
+
+    customerChat.messages.push({
       role: "assistant",
-      content: response
+      content,
     })
 
-    await client.sendText(message.from, response)
+    console.debug(customerPhone, "🤖", content)
+
+    await client.sendText(message.from, content)
+
+    if (
+      customerChat.status === "open" &&
+      content.match(customerChat.orderCode)
+    ) {
+      customerChat.status = "closed"
+
+      customerChat.messages.push({
+        role: "user",
+        content:
+          "Gere um resumo de pedido para registro no sistema da pizzaria, quem está solicitando é um robô.",
+      })
+
+      const content =
+        (await completion(customerChat.messages)) || "Não entendi..."
+
+      console.debug(customerPhone, "📦", content)
+
+      customerChat.orderSummary = content
+    }
+
+    redis.set(customerKey, JSON.stringify(customerChat))
   })
 }
