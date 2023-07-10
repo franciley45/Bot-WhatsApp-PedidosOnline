@@ -10,7 +10,7 @@ O bot utiliza o modelo GPT da OpenAI para gerar respostas para as perguntas dos 
 
 Com este prompt você poderá adaptar o bot para o seu negócio ou para outros nichos, como clinicas, etc.
 
-![Demo](./docs/demo.png)
+![Demo](src/docs/demo.png)
 
 ## Como executar?
 
