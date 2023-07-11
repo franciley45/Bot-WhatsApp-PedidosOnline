@@ -2,7 +2,7 @@
 
 # Food Commerce GPT
 
-Bot de atendimento para o Food Commerce utilizando modelo GPT da OpenAI. Ele foi desenvolvido em Typescript.
+Bot de atendimento para o Food Commerce utilizando modelo GPT da OpenAI. Projeto backend Node.js, TypeScript, Docker, é armazenamento em estruturas de dados Redis.
 
 ## Como funciona?
 
@@ -26,6 +26,11 @@ REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_DB=0
 ```
+Navegue até a pasta do projeto na raiz levantar os contêiners de armazenamento de dados:
+
+```bash
+docker-compose up -d
+```
 
 Após isso, você precisará instalar as dependências do projeto:
 
@@ -38,7 +43,10 @@ E então, executar o bot:
 ```bash
 npm run dev
 ```
+O localhost disponível é: 
+```bash
+http://localhost:8002
+```
 
 Para que você possa testar o bot, você precisará de um aplicativo do WhatsApp instalado no seu celular e escanear o QR Code que será gerado no terminal.
-
-**Importante:** devido ao fato de utilizar uma API não autorizada do WhatsApp pode gerar bloqueios e banimentos de números, por isso, teste com um número que você não se importe em perder. Não se responsabilizamos por qualquer dano causado pelo uso deste código.
+Após conectado o WhatsApp sera seu atendente automático virtual. Mandem mensagem de outro numero para inciar o atendimento.
